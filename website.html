@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>WordBuddy — Focus-Friendly Reading Companion</title>
+    <link rel="icon" href="./icons/icon48.png" />
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap');
+
+      :root {
+        --bg-deep: #030712;
+        --bg-panel: #0e1628;
+        --bg-panel-alt: #111e36;
+        --accent-blue: #2563eb;
+        --accent-green: #10b981;
+        --accent-gold: #fbbf24;
+        --text-primary: #f8fafc;
+        --text-muted: #cbd5f5;
+        --bubble-pink: rgba(236, 72, 153, 0.22);
+        --bubble-cyan: rgba(6, 182, 212, 0.18);
+        --bubble-indigo: rgba(99, 102, 241, 0.18);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family: 'Space Grotesk', 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+        margin: 0;
+        min-height: 100vh;
+        color: var(--text-primary);
+        background: radial-gradient(circle at 10% 20%, #0f1a33, var(--bg-deep));
+        overflow-x: hidden;
+      }
+
+      [data-scroll-reveal] {
+        opacity: 0;
+        transform: translateY(32px);
+        transition: opacity 900ms cubic-bezier(0.23, 1, 0.32, 1),
+          transform 900ms cubic-bezier(0.23, 1, 0.32, 1);
+      }
+
+      [data-scroll-reveal].is-visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .site-shell {
+        position: relative;
+        padding: 64px 8vw 96px;
+        z-index: 1;
+      }
+
+      .bubble-cloud {
+        position: fixed;
+        inset: 0;
+        overflow: hidden;
+        z-index: 0;
+      }
+
+      .bubble {
+        position: absolute;
+        border-radius: 999px;
+        filter: blur(0px);
+        mix-blend-mode: screen;
+        opacity: 0.85;
+        --float-duration: 10s;
+        --float-x: 0px;
+        --float-y: -60px;
+        animation: bubbleFloat var(--float-duration) ease-in-out infinite alternate;
+      }
+
+      .bubble:nth-child(1) {
+        width: 280px;
+        height: 280px;
+        background: var(--bubble-pink);
+        top: 6%;
+        left: 10%;
+        --float-duration: 8s;
+        --float-x: 40px;
+        --float-y: -90px;
+      }
+
+      .bubble:nth-child(2) {
+        width: 340px;
+        height: 340px;
+        background: var(--bubble-cyan);
+        bottom: 10%;
+        right: 12%;
+        --float-duration: 10s;
+        --float-x: -60px;
+        --float-y: -120px;
+      }
+
+      .bubble:nth-child(3) {
+        width: 220px;
+        height: 220px;
+        background: var(--bubble-indigo);
+        top: 35%;
+        right: 35%;
+        --float-duration: 12s;
+        --float-x: 35px;
+        --float-y: -70px;
+      }
+
+      .bubble:nth-child(4) {
+        width: 180px;
+        height: 180px;
+        background: rgba(59, 130, 246, 0.22);
+        bottom: 30%;
+        left: 8%;
+        --float-duration: 9s;
+        --float-x: 55px;
+        --float-y: -80px;
+      }
+
+      .bubble:nth-child(5) {
+        width: 420px;
+        height: 420px;
+        background: rgba(248, 113, 113, 0.18);
+        top: 18%;
+        right: 10%;
+        --float-duration: 14s;
+        --float-x: -70px;
+        --float-y: -140px;
+      }
+
+      @keyframes bubbleFloat {
+        0% {
+          transform: translate3d(0, 0, 0) scale(0.95);
+        }
+        50% {
+          transform: translate3d(calc(var(--float-x) * 0.7), calc(var(--float-y) * 0.7), 0) scale(1.12);
+        }
+        100% {
+          transform: translate3d(var(--float-x), var(--float-y), 0) scale(0.96);
+        }
+      }
+
+      header.site-hero {
+        position: relative;
+        border-radius: 32px;
+        padding: 52px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 36px;
+        align-items: center;
+        box-shadow: 0 20px 80px rgba(3, 7, 18, 0.65);
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        background: linear-gradient(145deg, rgba(17, 30, 54, 0.92), rgba(16, 185, 129, 0.12));
+        overflow: hidden;
+      }
+
+      .hero-visual {
+        position: relative;
+        border-radius: 28px;
+        overflow: hidden;
+        box-shadow: 0 18px 60px rgba(15, 23, 42, 0.6);
+      }
+
+      .hero-visual::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(160deg, rgba(3, 7, 18, 0.65), rgba(15, 23, 42, 0));
+      }
+
+      .hero-visual img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .hero-copy {
+        max-width: 520px;
+      }
+
+      .hero-copy h1 {
+        font-size: clamp(2.4rem, 4vw, 3.4rem);
+        line-height: 1.1;
+        margin: 12px 0;
+      }
+
+      .hero-copy p {
+        color: var(--text-muted);
+        max-width: 520px;
+        font-size: 1.05rem;
+      }
+
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-top: 24px;
+      }
+
+      .hero-actions a {
+        text-decoration: none;
+        padding: 12px 22px;
+        border-radius: 999px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        transition: transform 180ms ease, box-shadow 180ms ease;
+      }
+
+      .cta-primary {
+        background: var(--accent-blue);
+        color: #fff;
+        box-shadow: 0 10px 30px rgba(37, 99, 235, 0.35);
+      }
+
+      .cta-secondary {
+        color: var(--text-primary);
+        border: 1px solid rgba(148, 163, 184, 0.4);
+        background: transparent;
+      }
+
+      .hero-actions a:hover {
+        transform: translateY(-2px);
+      }
+
+      section {
+        margin-top: 72px;
+      }
+
+      .section-title {
+        margin-bottom: 24px;
+      }
+
+      .section-title span {
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        font-size: 0.8rem;
+        color: var(--accent-gold);
+      }
+
+      .section-title h2 {
+        font-size: clamp(1.8rem, 3vw, 2.6rem);
+        margin: 6px 0 0;
+      }
+
+      .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 20px;
+      }
+
+      .feature-card {
+        background: var(--bg-panel);
+        border-radius: 20px;
+        padding: 24px;
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        box-shadow: 0 30px 60px rgba(3, 7, 18, 0.45);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .feature-card::after {
+        content: '';
+        position: absolute;
+        inset: auto -40px -40px auto;
+        width: 160px;
+        height: 160px;
+        background: radial-gradient(circle, rgba(37, 99, 235, 0.35), transparent 70%);
+        opacity: 0.6;
+        pointer-events: none;
+      }
+
+      .feature-card h3 {
+        margin-top: 0;
+        font-size: 1.25rem;
+      }
+
+      .feature-card p {
+        color: var(--text-muted);
+        line-height: 1.5;
+      }
+
+      .steps {
+        display: grid;
+        gap: 18px;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      }
+
+      .step {
+        padding: 22px;
+        border-radius: 18px;
+        border: 1px solid rgba(148, 163, 184, 0.15);
+        background: var(--bg-panel-alt);
+      }
+
+      .step span {
+        font-size: 0.85rem;
+        letter-spacing: 0.24em;
+        color: var(--accent-green);
+      }
+
+      .step strong {
+        display: block;
+        font-size: 1.2rem;
+        margin: 8px 0;
+      }
+
+      .cta-panel {
+        margin-top: 90px;
+        padding: 40px;
+        background: linear-gradient(160deg, rgba(37, 99, 235, 0.18), rgba(16, 185, 129, 0.18));
+        border-radius: 24px;
+        border: 1px solid rgba(148, 163, 184, 0.25);
+        text-align: center;
+        box-shadow: 0 25px 70px rgba(3, 7, 18, 0.6);
+      }
+
+      .cta-panel h3 {
+        font-size: 2rem;
+        margin: 0 0 12px;
+      }
+
+      .cta-panel p {
+        color: var(--text-muted);
+        margin-bottom: 24px;
+      }
+
+      footer {
+        text-align: center;
+        margin-top: 64px;
+        color: rgba(226, 232, 240, 0.65);
+        font-size: 0.95rem;
+      }
+
+      @media (max-width: 640px) {
+        header.site-hero {
+          padding: 28px;
+        }
+        .hero-actions {
+          flex-direction: column;
+        }
+        .bubble:nth-child(2) {
+          width: 260px;
+          height: 260px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="bubble-cloud" aria-hidden="true">
+      <span class="bubble"></span>
+      <span class="bubble"></span>
+      <span class="bubble"></span>
+      <span class="bubble"></span>
+      <span class="bubble"></span>
+    </div>
+
+    <main class="site-shell">
+      <header class="site-hero" data-scroll-reveal>
+        <div class="hero-visual" aria-hidden="true">
+          <img src="./icons/robot.png" alt="WordBuddy extension icon background" />
+        </div>
+        <div class="hero-copy">
+          <p class="hero-tag">Built for different kinds of brains</p>
+          <h1>WordBuddy keeps every brain in flow.</h1>
+          <p>
+            WordBuddy was built with people who have ADHD, dyslexia, other learning differences, or who are still learning English.
+            Highlight any word or sentence to get calm, plain-language help that matches your pace and never piles on extra stress.
+          </p>
+          <div class="hero-actions">
+            <a class="cta-primary" href="#" aria-label="Install WordBuddy">Install on Chrome</a>
+            <a class="cta-secondary" href="#features">See how it works</a>
+          </div>
+        </div>
+      </header>
+
+      <section id="features" data-scroll-reveal>
+        <div class="section-title">
+          <span>Why WordBuddy?</span>
+          <h2>Help that feels friendly, not like homework.</h2>
+        </div>
+        <div class="feature-grid">
+          <article class="feature-card" data-scroll-reveal>
+            <h3>Quick word help</h3>
+            <p>
+              Popups serve short meanings, matching synonyms, gentle opposites, and simple examples that fit the sentence you picked.
+            </p>
+          </article>
+          <article class="feature-card" data-scroll-reveal>
+            <h3>Plain-language summaries</h3>
+            <p>
+              One tap opens a calm panel that rewrites the line in everyday words and can read it out loud so your brain stays relaxed.
+            </p>
+          </article>
+          <article class="feature-card" data-scroll-reveal>
+            <h3>Voice everywhere</h3>
+            <p>
+              Tap a speaker button to listen to any section or press the mic button to speak your question to Gemini instead of typing.
+            </p>
+          </article>
+          <article class="feature-card" data-scroll-reveal>
+            <h3>Gentle design</h3>
+            <p>
+              Soft colors, big type, and steady motion keep attention steady, and every control works with keyboards and screen readers.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section data-scroll-reveal>
+        <div class="section-title">
+          <span>3 easy steps</span>
+          <h2>Everything happens right where you look.</h2>
+        </div>
+        <div class="steps">
+          <article class="step" data-scroll-reveal>
+            <span>step 01</span>
+            <strong>Highlight text</strong>
+            <p>Use your mouse, keyboard, or switch input—WordBuddy leaves the focus right where you set it.</p>
+          </article>
+          <article class="step" data-scroll-reveal>
+            <span>step 02</span>
+            <strong>See the helper pop up</strong>
+            <p>A small helper card appears beside your highlight with the clues you need, so your eyes barely move.</p>
+          </article>
+          <article class="step" data-scroll-reveal>
+            <span>step 03</span>
+            <strong>Tap for extras</strong>
+            <p>Play pronunciation, skim synonyms, read a summary, or spark a chat—each option stays short and clear.</p>
+          </article>
+        </div>
+      </section>
+
+      <section data-scroll-reveal style="transition-duration: 600ms;">
+        <div class="section-title">
+          <span>Study support</span>
+          <h2>WordBuddy + Gemini means you never feel stuck.</h2>
+        </div>
+        <div class="feature-grid">
+          <article class="feature-card" data-scroll-reveal>
+            <h3>Friendly chat coach</h3>
+            <p>Ask Gemini simple follow-up questions. The chat sticks to your highlighted text, so answers stay on-topic.</p>
+          </article>
+          <article class="feature-card" data-scroll-reveal>
+            <h3>Comfortable audio</h3>
+            <p>Every section has a speaker button so you can listen without leaving the page or straining your eyes.</p>
+          </article>
+          <article class="feature-card" data-scroll-reveal>
+            <h3>Smooth, gentle motion</h3>
+            <p>Soft movement and glow effects make it easy to predict what happens next, lowering stress for busy brains.</p>
+          </article>
+        </div>
+      </section>
+
+      <div class="cta-panel" id="install" data-scroll-reveal>
+        <h3>Ready to give every brain a gentle boost?</h3>
+        <p>Install WordBuddy to turn tough articles into steady, friendly guidance for people with ADHD, dyslexia, autism, and other learning differences.</p>
+        <a class="cta-primary" href="#">Add WordBuddy to Chrome</a>
+      </div>
+
+      <footer>
+        Crafted for readers with ADHD, dyslexia, and curious brains everywhere. © <span id="year"></span> WordBuddy.
+      </footer>
+    </main>
+
+    <script>
+      if ('scrollRestoration' in history) {
+        history.scrollRestoration = 'manual';
+      }
+      window.scrollTo(0, 0);
+
+      const yearEl = document.getElementById('year');
+      if (yearEl) {
+        yearEl.textContent = new Date().getFullYear();
+      }
+
+      const revealElements = document.querySelectorAll('[data-scroll-reveal]');
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-visible');
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.08 }
+      );
+
+      revealElements.forEach((el, index) => {
+        el.style.transitionDelay = `${index * 150}ms`;
+        observer.observe(el);
+      });
+    </script>
+  </body>
+</html>

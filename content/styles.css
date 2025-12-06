@@ -1,0 +1,53 @@
+/* Style for the custom popup container */
+.my-extension-popup {
+    position: absolute;
+    z-index: 99999;
+    background-color: #333;
+    border-radius: 8px;
+    padding: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    display: flex;
+    gap: 8px;
+    /* Arrow pointing down */
+  }
+  
+  .my-extension-popup::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -6px;
+    border-width: 6px;
+    border-style: solid;
+    border-color: #333 transparent transparent transparent;
+  }
+  
+  /* Style for the buttons */
+  .my-extension-popup button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: sans-serif;
+    transition: background-color 0.2s;
+    white-space: nowrap;
+  }
+  
+  .my-extension-popup button:hover {
+    background-color: #45a049;
+  }
+  
+  /* Different colors for buttons */
+  .my-extension-popup button.btn-copy { background-color: #2196F3; }
+  .my-extension-popup button.btn-copy:hover { background-color: #0b7dda; }
+  
+  .my-extension-popup button.btn-save { background-color: #FF9800; }
+  .my-extension-popup button.btn-save:hover { background-color: #e68a00; }
+  
+  .my-extension-popup button.btn-share { background-color: #9C27B0; }
+  .my-extension-popup button.btn-share:hover { background-color: #7B1FA2; }
+  
+  
